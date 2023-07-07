@@ -42,5 +42,20 @@ function randRow(){
     return Math.floor(Math.random() * board.rows);
 }
 
+let snake = new Snake();
 
+function gameLoop(time) {
+  requestAnimationFrame(gameLoop);
+
+  const deltaTime = time - prevTime;
+  const interval = 1000 / FPS;
+
+  if (deltaTime > interval) {
+    prevTime = time - (deltaTime % interval);
+
+    snake.draw();
+  }
+}
+
+gameLoop();
 
