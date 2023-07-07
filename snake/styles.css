@@ -11,7 +11,7 @@ body {
 
 canvas {
     background-color: #4eba6e;
-    border: 5px solid #c5c1c1;
+    border: 5px solid rgb(21, 95, 85);
     position: absolute; /* or relative, fixed, etc. */
     top: 150px;
     left: 500px;
