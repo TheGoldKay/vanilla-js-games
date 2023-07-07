@@ -22,8 +22,10 @@ let food = {
     col: randCol(),
     row: randRow(),
     draw: function (){
+        ctx.beginPath();
+        ctx.arc(this.col * BOX_SIZE + BOX_SIZE / 2, this.row * BOX_SIZE + BOX_SIZE / 2, BOX_SIZE / 2, 0, 2 * Math.PI);
         ctx.fillStyle = "blue";
-        ctx.fillRect(this.col * BOX_SIZE, this.row * BOX_SIZE, BOX_SIZE, BOX_SIZE);
+        ctx.fill();
     },
 };
 
@@ -96,6 +98,11 @@ function drawBoard(){
     }
 }
 
+function newFood(){
+    food.col = randCol();
+    food.row = randRow();
+}
+
 function collide(){
     if(food.col === snake.head.col && food.row === snake.head.row){
         // insert the head's pos as the body first part (growing it)
@@ -109,8 +116,19 @@ function collide(){
             row: food.row,
         };
         // place food in random position
-        food.col = randCol();
-        food.row = randRow();
+        newFood();
+    }
+}
+
+function gameOver(){
+    console.log(snake.head, snake.body);
+    for(let i = 1; i < snake.body.length; i++){
+        let part = snake.body[i];
+        if(part.col === snake.head.col && part.row === snake.head.row){
+            newFood();
+            // erase the snake's body
+            snake.body = [];
+        }
     }
 }
 
@@ -138,11 +156,13 @@ function gameLoop(time) {
   if (deltaTime > interval) {
     prevTime = time - (deltaTime % interval);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    gameOver();
     snake.update();
     collide();
     food.draw();
     snake.draw();
     drawBoard();
+
   }
 }
 
