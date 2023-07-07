@@ -22,7 +22,7 @@ let food = {
     col: randCol(),
     row: randRow(),
     draw: function (){
-        ctx.fillStyle = "pink";
+        ctx.fillStyle = "blue";
         ctx.fillRect(this.col * BOX_SIZE, this.row * BOX_SIZE, BOX_SIZE, BOX_SIZE);
     },
 };
@@ -39,9 +39,9 @@ class Snake{
         ctx.fillStyle = this.color;
         ctx.fillRect(this.head.col * BOX_SIZE, this.head.row * BOX_SIZE, BOX_SIZE, BOX_SIZE);
         if(this.body.length){
-            this.body.forEach(part => {
+            for(const part of this.body){
                 ctx.fillRect(part.col * BOX_SIZE, part.row * BOX_SIZE, BOX_SIZE, BOX_SIZE);
-            });
+            }
         }
     }
     update(){
@@ -52,10 +52,10 @@ class Snake{
             this.head.col += this.velx;
             this.head.row += this.vely;
             this.body.unshift(last);
-            this.head.col, this.head.row = outWin(this.head.col, this.head.row);
-            this.body.forEach(part => {
-                part.col, part.row = outWin(part.col, part.row);
-            });
+            [this.head.col, this.head.row] = outWin(this.head.col, this.head.row);
+            for(let i = 0; i < this.body.length; ++i){
+                [this.body[i].col, this.body[i].row] = outWin(this.body[i].col, this.body[i].row); 
+            }
         }else{
             this.head.col += this.velx;
             this.head.row += this.vely;
@@ -96,6 +96,24 @@ function drawBoard(){
     }
 }
 
+function collide(){
+    if(food.col === snake.head.col && food.row === snake.head.row){
+        // insert the head's pos as the body first part (growing it)
+        snake.body.unshift({
+            col: snake.head.col,
+            row: snake.head.row,
+        });
+        // the food position will become the snake's head
+        snake.head = {
+            col: food.col,
+            row: food.row,
+        };
+        // place food in random position
+        food.col = randCol();
+        food.row = randRow();
+    }
+}
+
 document.addEventListener('keydown', function(event) {
     if (event.code === 'ArrowLeft' && snake.velx !== 1) {
         snake.velx = -1;
@@ -121,9 +139,10 @@ function gameLoop(time) {
     prevTime = time - (deltaTime % interval);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     snake.update();
-    drawBoard();
+    collide();
     food.draw();
     snake.draw();
+    drawBoard();
   }
 }
 
